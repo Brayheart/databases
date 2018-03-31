@@ -8,8 +8,19 @@ var connection = mysql.createConnection({
 });
 
 // Retrieves information from the SQL table
-module.exports.retrieve = function (table, callback) {
-  connection.query('SELECT * FROM ?', [table], function(error, results){
+module.exports.retrieveMessage = function (table, callback) {
+  connection.query(`SELECT * FROM ?`, [table], function(error, results){
+    if(error){
+      console.log(error);
+      callback(error);
+    } else {
+      callback(null, results);
+    }
+  });
+};
+
+module.exports.retrieveUsers = function (query, callback) {
+  connection.query(`SELECT id FROM users WHERE name = ?`, query, function(error, results){
     if(error){
       console.log(error);
       callback(error);
@@ -20,12 +31,22 @@ module.exports.retrieve = function (table, callback) {
 };
 
 // Sends information to the SQL Table
-module.exports.insert = function (table, field, query, callback) {
-  connection.query('INSERT INTO ? (?) VALUES ?', [table, field, query] , function(error, results, fields){
+module.exports.insertMessage = function (query, callback) {
+  connection.query(`INSERT INTO messages (users, message, roomname) VALUES (?)`, query, function(error, results, fields){
     if(error){
       callback(error);
     } else {
-      callback(results);
+      callback(null, results);
+    }
+  });
+};
+
+module.exports.insertUser = function (query, callback) {
+  connection.query(`INSERT INTO users (name) VALUES (?)`, query, function(error, results, fields){
+    if(error){
+      callback(error);
+    } else {
+      callback(null, results);
     }
   });
 };
